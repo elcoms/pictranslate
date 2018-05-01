@@ -1,4 +1,4 @@
-from ConfigParser import RawConfigParser
+from configparser import RawConfigParser
 from random import randint
 from telegram.ext import Updater, CommandHandler
 from google.cloud import translate
@@ -13,7 +13,7 @@ def translateOnly(bot, update):
         text = update.message["text"].split(' ', 1)
         result = client.translate(text[1])
     except Exception as e:
-        print e
+        print(e)
 
     bot.sendMessage(chat_id=update.message.chat_id, text=result["translatedText"])
 
@@ -24,7 +24,7 @@ def pictranslate(bot, update):
         text = update.message["text"].split(' ', 1)
         result = client.translate(text[1])
     except Exception as e:
-        print e
+        print(e)
 
     try:
         imageClient = google_images_download.googleimagesdownload()
@@ -35,7 +35,7 @@ def pictranslate(bot, update):
                 "print_urls": True
             })
     except Exception as e:
-        print e
+        print(e)
 
     bot.sendPhoto(chat_id=update.message.chat_id, photo=imageURL, caption=result["translatedText"])
 
