@@ -3,7 +3,8 @@ from random import randint
 from telegram.ext import Updater, CommandHandler
 from googleapiclient.discovery import build
 from google_images_download import google_images_download
-from os import getenv
+from os import getenv, listdir, path
+from tempfile import TemporaryDirectory
 
 load_dotenv(dotenv_path='.env')
 
@@ -41,17 +42,24 @@ def pictranslate(bot, update):
 
   try:
     imageClient = google_images_download.googleimagesdownload()
-    imageURL = imageClient.download(
-      {
-        "keywords": result["translatedText"],
-        "limit": randint(1, 21),
-        "print_urls": True
+    keywords = response['translations'][0]['translatedText']
+
+    with TemporaryDirectory() as temp_dir: 
+      imageClient.download({
+        'keywords': keywords,
+        'limit': 20,
+        'print_urls': True,
+        'output_directory': temp_dir
       })
+
+      images_dir = path.join(temp_dir, keywords)
+      files = listdir(images_dir)
+      chosen_photo = files[randint(0, len(files) - 1)]
+
+      bot.sendPhoto(chat_id=update.message.chat_id, photo=open(path.join(images_dir, chosen_photo), 'rb'),
+                caption=response['translations'][0]['translatedText'])
   except Exception as e:
     print(e)
-
-  bot.sendPhoto(chat_id=update.message.chat_id, photo=imageURL,
-                caption=response['translations'][0]['translatedText'])
 
 
 updater = Updater(token=getenv('TELEGRAM_BOT_TOKEN'))
