@@ -1,8 +1,11 @@
+from dotenv import load_dotenv
 from configparser import RawConfigParser
 from random import randint
 from telegram.ext import Updater, CommandHandler
 from google.cloud import translate
 from google_images_download import google_images_download
+
+load_dotenv()
 
 def start(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id, text="Send me some weird characters.")
